@@ -9,14 +9,12 @@ echo "(run_singularity.py): Called on compute node from current isaaclab directo
 setup_directories() {
     # Check and create directories
     for dir in \
-        "${CLUSTER_ISAAC_SIM_CACHE_DIR}/cache/kit" \
-        "${CLUSTER_ISAAC_SIM_CACHE_DIR}/cache/ov" \
-        "${CLUSTER_ISAAC_SIM_CACHE_DIR}/cache/pip" \
-        "${CLUSTER_ISAAC_SIM_CACHE_DIR}/cache/glcache" \
+        "${CLUSTER_ISAAC_SIM_CACHE_DIR}/cache/main" \
         "${CLUSTER_ISAAC_SIM_CACHE_DIR}/cache/computecache" \
         "${CLUSTER_ISAAC_SIM_CACHE_DIR}/logs" \
+        "${CLUSTER_ISAAC_SIM_CACHE_DIR}/config" \
         "${CLUSTER_ISAAC_SIM_CACHE_DIR}/data" \
-        "${CLUSTER_ISAAC_SIM_CACHE_DIR}/documents"; do
+        "${CLUSTER_ISAAC_SIM_CACHE_DIR}/pkg"; do
         if [ ! -d "$dir" ]; then
             mkdir -p "$dir"
             echo "Created directory: $dir"
@@ -58,14 +56,12 @@ tar -xf $CLUSTER_SIF_PATH/$2.tar  -C $TMPDIR
 # NOTE: ISAACLAB_PATH is normally set in `isaaclab.sh` but we directly call the isaac-sim python because we sync the entire
 # Isaac Lab directory to the compute node and remote the symbolic link to isaac-sim
 singularity exec \
-    -B $TMPDIR/docker-isaac-sim/cache/kit:${DOCKER_ISAACSIM_ROOT_PATH}/kit/cache:rw \
-    -B $TMPDIR/docker-isaac-sim/cache/ov:${DOCKER_USER_HOME}/.cache/ov:rw \
-    -B $TMPDIR/docker-isaac-sim/cache/pip:${DOCKER_USER_HOME}/.cache/pip:rw \
-    -B $TMPDIR/docker-isaac-sim/cache/glcache:${DOCKER_USER_HOME}/.cache/nvidia/GLCache:rw \
+    -B $TMPDIR/docker-isaac-sim/cache/main:${DOCKER_USER_HOME}/.cache:rw \
     -B $TMPDIR/docker-isaac-sim/cache/computecache:${DOCKER_USER_HOME}/.nv/ComputeCache:rw \
     -B $TMPDIR/docker-isaac-sim/logs:${DOCKER_USER_HOME}/.nvidia-omniverse/logs:rw \
+    -B $TMPDIR/docker-isaac-sim/config:${DOCKER_USER_HOME}/.nvidia-omniverse/config:rw \
     -B $TMPDIR/docker-isaac-sim/data:${DOCKER_USER_HOME}/.local/share/ov/data:rw \
-    -B $TMPDIR/docker-isaac-sim/documents:${DOCKER_USER_HOME}/Documents:rw \
+    -B $TMPDIR/docker-isaac-sim/pkg:${DOCKER_USER_HOME}/.local/share/ov/pkg:rw \
     -B $TMPDIR/$dir_name:/workspace/isaaclab:rw \
     -B $CLUSTER_ISAACLAB_DIR/logs:/workspace/isaaclab/logs:rw \
     --nv --writable --containall $TMPDIR/$2.sif \

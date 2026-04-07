@@ -67,14 +67,12 @@ RUN --mount=type=cache,target=/var/cache/apt \
     rm -rf /var/lib/apt/lists/*
 
 # for singularity usage, have to create the directories that will binded
-RUN mkdir -p ${ISAACSIM_ROOT_PATH}/kit/cache && \
-    mkdir -p ${DOCKER_USER_HOME}/.cache/ov && \
-    mkdir -p ${DOCKER_USER_HOME}/.cache/pip && \
-    mkdir -p ${DOCKER_USER_HOME}/.cache/nvidia/GLCache &&  \
+RUN mkdir -p ${DOCKER_USER_HOME}/.cache && \
     mkdir -p ${DOCKER_USER_HOME}/.nv/ComputeCache && \
     mkdir -p ${DOCKER_USER_HOME}/.nvidia-omniverse/logs && \
+    mkdir -p ${DOCKER_USER_HOME}/.nvidia-omniverse/config && \
     mkdir -p ${DOCKER_USER_HOME}/.local/share/ov/data && \
-    mkdir -p ${DOCKER_USER_HOME}/Documents
+    mkdir -p ${DOCKER_USER_HOME}/.local/share/ov/pkg
 
 # for singularity usage, create NVIDIA binary placeholders
 RUN touch /bin/nvidia-smi && \
