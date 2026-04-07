@@ -201,14 +201,14 @@ Here are some general commands to get started with it:
 
           .. code-block:: bash
 
-            python scripts/zero_agent.py --task=<Task-Name>
+            python scripts/environments/zero_agent.py --task=<Task-Name>
 
       .. tab-item:: :icon:`fa-brands fa-windows` Windows
           :sync: windows
 
           .. code-block:: batch
 
-            python scripts\zero_agent.py --task=<Task-Name>
+            python scripts\environments\zero_agent.py --task=<Task-Name>
 
   * Random-action agent
 
@@ -220,11 +220,11 @@ Here are some general commands to get started with it:
 
           .. code-block:: bash
 
-            python scripts/random_agent.py --task=<Task-Name>
+            python scripts/environments/random_agent.py --task=<Task-Name>
 
       .. tab-item:: :icon:`fa-brands fa-windows` Windows
           :sync: windows
 
           .. code-block:: batch
 
-            python scripts\random_agent.py --task=<Task-Name>
+            python scripts\environments\random_agent.py --task=<Task-Name>
