@@ -926,12 +926,18 @@ kinematics.
    publishes a per-robot calibration workflow for exporting an accurate robot description:
    `flexiv_calibration <https://github.com/flexivrobotics/flexiv_ros2/tree/release/lyrical-v1.9.3/flexiv_calibration>`__.
    Follow it to generate the calibrated description for your setup, convert it to USD, and point the environment at
-   it with the ``DP_ROBOT_USD`` environment variable (it overrides the default calibrated asset in
-   ``config/displayport_rizon_4s/joint_pos_env_cfg.py``).
+   it with the ``DP_ROBOT_USD`` environment variable. It overrides the robot USD in both control spaces, so the
+   same calibrated asset can be used for either.
 
    Task-space policies are less exposed to this: they are commanded in Cartesian space, so kinematic error affects
    the observed end-effector pose rather than being injected straight into the commanded joint targets. Getting the
    kinematics right is still worthwhile in both cases.
+
+   The two control spaces do not start from the same robot asset. The joint-space configuration spawns the
+   calibrated ``Rizon4s-063459_with_Grav_calibrated_kinematics.usd`` shipped with the task, set in
+   ``config/displayport_rizon_4s/joint_pos_env_cfg.py``, while the task-space configuration spawns the stock
+   Rizon 4s asset. Neither default is guaranteed to describe the arm in use, so set ``DP_ROBOT_USD`` unless the
+   shipped asset has been confirmed to match that unit.
 
 In each case, train on the ``-ROS-Inference-v0`` id so the trained environment carries the deployment contract,
 and use the ``-Play-v0`` id for evaluation and visualization. The task-space environment already uses the

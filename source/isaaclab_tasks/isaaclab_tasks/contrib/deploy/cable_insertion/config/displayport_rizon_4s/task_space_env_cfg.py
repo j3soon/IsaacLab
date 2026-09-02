@@ -29,6 +29,7 @@ from isaaclab_tasks.contrib.deploy.cable_insertion.displayport_insertion_env_cfg
     PLUG_INSERTION_OFFSET,
     SOCKET_INSERTION_OFFSET,
     DisplayportInsertionEnvCfg,
+    resolve_robot_usd,
 )
 
 from .joint_pos_env_cfg import (
@@ -342,9 +343,12 @@ class Rizon4sTaskSpaceDisplayportInsertionEnvCfg(DisplayportInsertionEnvCfg):
         )
 
         # ----- Scene: robot -----
+        # ``None`` keeps the robot's own default USD; ``DP_ROBOT_USD`` overrides it.
+        _robot_usd = resolve_robot_usd(None)
         self.scene.robot = FLEXIV_RIZON4S_GRAV_GRIPPER_CFG.replace(
             prim_path="{ENV_REGEX_NS}/Robot",
             spawn=FLEXIV_RIZON4S_GRAV_GRIPPER_CFG.spawn.replace(
+                **({"usd_path": _robot_usd} if _robot_usd else {}),
                 rigid_props=sim_utils.RigidBodyPropertiesCfg(
                     disable_gravity=True,
                     max_depenetration_velocity=5.0,

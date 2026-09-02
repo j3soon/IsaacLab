@@ -37,6 +37,37 @@ CABLE_INSERTION_DIR = os.path.dirname(os.path.abspath(__file__))
 DISPLAY_ASSETS_DIR = os.path.join(CABLE_INSERTION_DIR, "display_cable_insertion_assets")
 
 
+#: Environment variable used to point the DisplayPort environments at a different robot USD.
+DP_ROBOT_USD_ENV_VAR = "DP_ROBOT_USD"
+
+
+def resolve_robot_usd(default_usd_path: str | None) -> str | None:
+    """Return the robot USD to spawn, honouring the ``DP_ROBOT_USD`` override.
+
+    Individual Flexiv arms differ from the nominal CAD model, and joint-space policies
+    command joints directly, so a kinematic mismatch shows up as end-effector error at
+    sub-millimetre insertion clearances. Flexiv's ``flexiv_calibration`` workflow exports
+    a per-arm description; converting it to USD and exporting ``DP_ROBOT_USD`` selects it
+    without editing the task configuration.
+
+    The value is passed through to the spawner untouched, so it accepts anything a
+    ``UsdFileCfg`` accepts: a local path, an ``omniverse://`` URL, or an HTTP(S) asset
+    URL. The spawner resolves and, for remote paths, downloads it, and raises
+    ``FileNotFoundError`` naming the path if it cannot be reached, so a typo surfaces
+    there rather than being validated (and wrongly rejected for remote URLs) here.
+
+    Args:
+        default_usd_path: USD used when the override is unset. ``None`` keeps whatever the
+            robot's own spawn configuration already specifies.
+
+    Returns:
+        The overriding path when ``DP_ROBOT_USD`` is set to a non-empty value, else
+        ``default_usd_path``.
+    """
+    override = os.environ.get(DP_ROBOT_USD_ENV_VAR, "").strip()
+    return override or default_usd_path
+
+
 def _quat_rotate_vec(q_xyzw, v):
     """Apply quaternion rotation to a 3D vector."""
     qx, qy, qz, qw = q_xyzw

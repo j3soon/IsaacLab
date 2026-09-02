@@ -28,6 +28,7 @@ from isaaclab_tasks.contrib.deploy.cable_insertion.displayport_insertion_env_cfg
     DisplayportInsertionEnvCfg,
     compute_plug_pose,
     compute_socket_root,
+    resolve_robot_usd,
 )
 
 # DisplayPort insertion station layout in the Flexiv workspace.
@@ -316,7 +317,7 @@ class Rizon4sGravDisplayportInsertionEnvCfg(DisplayportInsertionEnvCfg):
         self.scene.robot = FLEXIV_RIZON4S_GRAV_GRIPPER_CFG.replace(
             prim_path="{ENV_REGEX_NS}/Robot",
             spawn=FLEXIV_RIZON4S_GRAV_GRIPPER_CFG.spawn.replace(
-                usd_path=_RIZON4S_CALIBRATED_USD_PATH,
+                usd_path=resolve_robot_usd(_RIZON4S_CALIBRATED_USD_PATH),
                 rigid_props=sim_utils.RigidBodyPropertiesCfg(
                     disable_gravity=True,
                     max_depenetration_velocity=5.0,
