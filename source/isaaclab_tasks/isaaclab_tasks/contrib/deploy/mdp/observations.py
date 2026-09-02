@@ -13,7 +13,7 @@ import torch
 import warp as wp
 
 from isaaclab.managers import ManagerTermBase, ObservationTermCfg, SceneEntityCfg
-from isaaclab.utils.math import combine_frame_transforms, matrix_from_quat
+from isaaclab.utils.math import combine_frame_transforms, matrix_from_quat, quat_unique
 
 if TYPE_CHECKING:
     from isaaclab.assets import Articulation, RigidObject
@@ -421,11 +421,13 @@ class rigid_object_quat_w(ManagerTermBase):
     ) -> torch.Tensor:
         obj_quat = wp.to_torch(self.asset.data.root_quat_w)
 
-        w_negative = obj_quat[:, 3] < 0
-        positive_quat = obj_quat.clone()
-        positive_quat[w_negative] = -obj_quat[w_negative]
-
-        return positive_quat
+        # This term is traced into the joint-space LEAPP export, so the
+        # canonicalisation has to stay ONNX-convertible. ``quat_unique`` is a
+        # branchless ``torch.where`` and exports as a plain elementwise select.
+        # Masked assignment is the obvious alternative but lowers to
+        # ``aten.masked_select``, whose output shape is data-dependent; the ONNX
+        # exporter has no conversion for it.
+        return quat_unique(obj_quat)
 
 
 def _quat_to_rot_6d(quat: torch.Tensor) -> torch.Tensor:

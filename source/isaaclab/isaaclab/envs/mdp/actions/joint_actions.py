@@ -66,7 +66,11 @@ class JointAction(ActionTerm):
             self.cfg.joint_names, preserve_order=self.cfg.preserve_order, as_proxy=True
         )
         self._num_joints = len(joint_ids)
-        self._joint_ids = joint_ids.torch
+        # ``find_joints`` returns warp-backed indices, which surface as ``int32``. Torch
+        # accepts int32 for advanced indexing, but ONNX ``GatherND`` requires int64, so an
+        # int32 index tensor produces a structurally invalid graph when this action term is
+        # traced for export. Normalise to int64 at resolution time.
+        self._joint_ids = joint_ids.torch.long()
         # log the resolved joint names for debugging
         logger.info(
             f"Resolved joint names for the action term {self.__class__.__name__}:"
