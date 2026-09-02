@@ -221,8 +221,13 @@ def export_displayport_agent(
             # annotations must target that same node or LEAPP cannot find it.
             policy_node_name = graph_name
 
+        # Resolve the export backend once, so every downstream annotation uses the same
+        # default. ``--export_method`` defaults to ``None`` in argparse; forwarding that
+        # ``None`` to LEAPP silently skips model compilation, producing a package with no
+        # ``.onnx`` graph whose validation is skipped but still reported as passing.
+        export_method = "onnx-dynamo" if args_cli.export_method is None else args_cli.export_method
+
         if isinstance(env.unwrapped, _export.ManagerBasedRLEnv):
-            export_method = "onnx-dynamo" if args_cli.export_method is None else args_cli.export_method
             # Patch only the observation groups consumed by the actor policy.
             # This filters out the critic and teacher observation groups.
             obs_groups_cfg = getattr(agent_cfg, "obs_groups", None)
@@ -317,7 +322,7 @@ def export_displayport_agent(
 
                 if args_cli.task_space_contract:
                     processed_action = _export.torch.clamp(actions, -1.0, 1.0) * task_space_scale
-                    export_task_space_action(graph_name, processed_action, args_cli.export_method)
+                    export_task_space_action(graph_name, processed_action, export_method)
                     # Refresh inputs without invoking the action manager, which would apply the
                     # raw (unscaled) action and desynchronise the traced graph.
                     obs = env.get_observations()
