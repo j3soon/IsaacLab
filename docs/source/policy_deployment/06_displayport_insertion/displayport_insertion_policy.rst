@@ -889,6 +889,17 @@ Training uses a recurrent PPO agent (LSTM, 1500 max iterations, 512 steps per en
 
 .. note::
 
+   Checkpoints are written every ``save_interval`` iterations, which the shipped agent
+   configuration sets to ``50``. A ``model_0.pt`` appears immediately, but it holds an
+   untrained network, so the first checkpoint that reflects any learning is
+   ``model_50.pt``. Every step from Step 3 onwards needs a ``--checkpoint``, so to walk
+   the export and inference sections through sooner, append
+   ``agent.save_interval=<N>`` with a smaller ``N`` to the training command above. A
+   checkpoint taken that early will not insert reliably; it is for exercising the export
+   and deployment plumbing, not for evaluating the policy.
+
+.. note::
+
     **GPU Memory Considerations**: The default configuration uses 4096 environments in the base config but 256 is recommended for most GPUs. The plug and socket SDF collision meshes and high rigid-body solver counts increase GPU memory usage compared to primitive-shape tasks. Reduce ``num_envs`` or ``solver_position_iteration_count`` on the plug/socket assets if you encounter out-of-memory errors.
 
 **Monitoring Training Progress with TensorBoard:**
