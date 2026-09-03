@@ -1187,9 +1187,11 @@ For DisplayPort insertion, prefer the dedicated play script over the generic
 ``./isaaclab.sh play`` path. It keeps DP-specific pose overrides, perception-error
 injection, and ``policy_io.csv`` logging out of the shared play entrypoint.
 
-The examples below use the joint-space ROS-inference task. They apply unchanged to a task-space policy —
-substitute ``...-Grav-TaskSpace-ROS-Inference-v0`` for the ``--task`` id and point ``--checkpoint`` (or
-``--leapp_model``) at the corresponding run.
+The examples below use the joint-space ROS-inference task. To run a task-space policy,
+substitute ``...-Grav-TaskSpace-ROS-Inference-v0`` for the ``--task`` id, point
+``--checkpoint`` (or ``--leapp_model``) at the corresponding run, and pass that
+environment's own station pose (``--socket_pos 0.475 0.125 0.06``) rather than the
+joint-space one used below. The flags are otherwise identical.
 
 **RSL-RL checkpoint** (recommended shipping task):
 
@@ -1256,17 +1258,29 @@ Generic play (no DP pose / CSV knobs) still works for a quick smoke test:
         --num_envs 1 \
         --checkpoint <path_to_model.pt>
 
-To match a specific real-world station layout, edit the workspace constants in ``config/displayport_rizon_4s/joint_pos_env_cfg.py`` (training layout) or ``config/displayport_rizon_4s/ros_inference_env_cfg.py`` (deployment layout):
+To match a specific real-world station layout, edit the workspace constants of the
+environment you are running. Each of the three configurations below carries its own
+station pose, so re-measuring your station means updating the one you train and deploy
+with; editing another has no effect:
 
 .. code-block:: python
 
-    # Training station layout (joint_pos_env_cfg.py)
+    # Training layout, both control spaces (joint_pos_env_cfg.py)
     _GEOMETRY_POS = (0.475, 0.125, 0.06)
     _SOCKET_ROT = (0.5, 0.5, 0.5, -0.5)
 
-    # Deployment layout (ros_inference_env_cfg.py)
+    # Joint-space deployment layout (ros_inference_env_cfg.py)
     _DEPLOY_GEOMETRY_POS = (0.476, 0.127, 0.07)
     _DEPLOY_SOCKET_ROT = (0.5, 0.5, 0.5, -0.5)
+
+    # Task-space deployment layout (task_space_ros_inference_env_cfg.py)
+    _HUBBLE_GEOMETRY_POS = (0.475, 0.125, 0.06)
+    _HUBBLE_SOCKET_ROT = (0.5, 0.5, 0.5, -0.5)
+    _HUBBLE_PLUG_CLEARANCE_Z = 0.068
+
+The two deployment stations do not currently hold the same position. Pass the pose of the
+environment you are actually running to ``--socket_pos``, and re-measure both if you
+deploy both control spaces against one physical station.
 
 This workflow is useful for:
 
