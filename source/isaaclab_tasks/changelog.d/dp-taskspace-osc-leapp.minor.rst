@@ -12,3 +12,6 @@ Added
 * Added :file:`scripts/reinforcement_learning/leapp/rsl_rl/export_displayport_insertion.py`, a DisplayPort-specific
   LEAPP exporter that reuses the generic RSL-RL export flow and adds the ``--task_space_contract`` option, which
   publishes the Isaac ROS Deploy task-space I/O contract (four named pose inputs and a scaled Cartesian pose delta).
+* Added support for the ``DP_ROBOT_USD`` environment variable, which selects the robot USD spawned by the
+  DisplayPort cable-insertion environments in both control spaces. The value is passed to the spawner untouched,
+  so a calibrated robot description may be a local path, a Nucleus URL or an HTTP(S) URL.

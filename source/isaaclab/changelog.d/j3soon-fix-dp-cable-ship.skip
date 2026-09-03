@@ -1,0 +1,2 @@
+Internal: normalised the joint indices resolved by ``JointAction`` to ``int64`` so the term is ONNX-exportable.
+The warp-backed ``int32`` form it replaces exists only on ``develop``, so no released behaviour changes.
